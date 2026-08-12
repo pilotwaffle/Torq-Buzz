@@ -1,0 +1,13 @@
+{
+  "id": "qwen-glm",
+  "label": "Qwen Code (GLM 5.2)",
+  "command": "qwen",
+  "args": [
+    "--acp",
+    "-m",
+    "glm-5.2"
+  ],
+  "env": {},
+  "installInstructionsUrl": "https://github.com/QwenLM/qwen-code",
+  "installHint": "Buzz talks to Qwen Code through its CLI's ACP mode with the model pinned: qwen --acp -m glm-5.2."
+}

@@ -1,0 +1,18 @@
+[package]
+name = "torq-buzz-profile-helper"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.88.0"
+license = "Apache-2.0"
+description = "Narrow TORQ Buzz profile/keyring helper (identity-map cleanup only; no secret export)"
+publish = false
+
+[[bin]]
+name = "torq-buzz-profile-helper"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"

@@ -1,0 +1,12 @@
+{
+  "migration_run_id": "00000000-0000-4000-8000-000000000001",
+  "source_event_id": "5ff77c3fb4c15b8362c23398a998e45a9fe77d13622adcd9a88cd2f3115dd670",
+  "source_event_author": "bf89795d33481f5b83e918bc2837ebb2f7b01bbcaf8fecc740fc83c94ef5a9b7",
+  "source_channel_id": "1999fab3-9d01-46be-a1e2-5d2459a2ee01",
+  "destination_channel_id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+  "destination_public_key": "REPLACE_WITH_PERMANENT_HUMAN_PUBKEY_64_HEX",
+  "content": "TORQ_BUZZ_RUNTIME_ACCEPTANCE_001",
+  "intended_kind": 9,
+  "intended_relay_url": "ws://127.0.0.1:3300",
+  "candidates_json_path": null
+}

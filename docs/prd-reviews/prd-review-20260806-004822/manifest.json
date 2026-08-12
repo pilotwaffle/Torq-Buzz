@@ -1,0 +1,16 @@
+{
+  "source_prd": "E:\\TORQ-BUZZ\\docs\\PRD-TCLAW-COLLABORATION-SUBSTRATE-001.md",
+  "max_cycles": 1,
+  "models": {
+    "reviewer": "gpt-5.6-terra",
+    "author": "codex-current",
+    "verifier": "gpt-5.6-terra"
+  },
+  "status": "cycle1_rejected_revised_v0.2",
+  "artifacts": [
+    "prd-v0.md",
+    "g1r-terra-cycle1.md",
+    "synthesis-log.md",
+    "../../PRD-TCLAW-COLLABORATION-SUBSTRATE-001-v0.2.md"
+  ]
+}

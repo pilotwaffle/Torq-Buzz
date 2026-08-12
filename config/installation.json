@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "product": "TORQ Buzz",
+  "root": "E:\\TORQ-BUZZ",
+  "production_source": "E:\\TORQ-BUZZ\\source\\buzz",
+  "pinned_commit": "3e48f1b2365d326ee1c9582448d86a99b44ecd5d",
+  "pinned_tag": "v0.5.2",
+  "overlay_patch": "patches/torq-buzz-local.patch",
+  "copy_selected_message": "VERIFIED_COPY_STEP",
+  "c1_status": "implemented_prep_only",
+  "pilot_root": "E:\\TORQ-CONSOLE\\tmp\\buzz-pilot\\20260731-004310",
+  "pilot_excluded_patch": "crates/buzz-db/src/replica_fence.rs"
+}

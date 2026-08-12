@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "relay_ws": { "address": "127.0.0.1", "port": 3300 },
+  "health": { "address": "127.0.0.1", "port": 8380 },
+  "metrics": { "address": "127.0.0.1", "port": 9302 },
+  "postgres": { "address": "127.0.0.1", "port": 55432 },
+  "redis": { "address": "127.0.0.1", "port": 16379 },
+  "minio": { "address": "127.0.0.1", "port": 19000 },
+  "notes": "C1 prepared. C5 required before live bind of permanent stack."
+}

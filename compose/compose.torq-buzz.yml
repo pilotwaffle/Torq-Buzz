@@ -1,0 +1,48 @@
+# TORQ Buzz permanent support stack — PREPARED under C1.
+# DO NOT `docker compose up` without C5 authorization.
+# Digests should be pinned via config/compose.images.env before any pull.
+
+name: ${TORQ_BUZZ_COMPOSE_PROJECT:-torq-buzz}
+
+services:
+  postgres:
+    image: ${POSTGRES_IMAGE:-postgres:17}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:55432:5432"
+    env_file:
+      - ../config/postgres.env
+    volumes:
+      - torq_buzz_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: ${REDIS_IMAGE:-redis:7}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:16379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  minio:
+    image: ${MINIO_IMAGE:-minio/minio:latest}
+    restart: unless-stopped
+    command: server /data --console-address ":19001"
+    ports:
+      - "127.0.0.1:19000:9000"
+      - "127.0.0.1:19001:19001"
+    env_file:
+      - ../config/minio.env
+    volumes:
+      - torq_buzz_minio:/data
+
+volumes:
+  torq_buzz_pgdata:
+  torq_buzz_minio:

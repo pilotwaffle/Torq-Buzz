@@ -1,0 +1,11 @@
+{
+  "id": "qwen-deepseek",
+  "label": "Qwen Code (DeepSeek)",
+  "command": "qwen",
+  "args": ["--acp", "-m", "deepseek-v4-pro"],
+  "env": {
+    "QWEN_CODE_API_TIMEOUT_MS": "600000"
+  },
+  "installInstructionsUrl": "https://github.com/QwenLM/qwen-code",
+  "installHint": "Buzz talks to Qwen Code through its CLI's ACP mode with the model pinned: qwen --acp -m deepseek-v4-pro."
+}

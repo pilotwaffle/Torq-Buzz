@@ -1,0 +1,9 @@
+{
+  "id": "qwen-max",
+  "label": "Qwen Code (Qwen3.8 Max)",
+  "command": "qwen",
+  "args": ["--acp", "-m", "qwen3.8-max-preview"],
+  "env": {},
+  "installInstructionsUrl": "https://github.com/QwenLM/qwen-code",
+  "installHint": "Buzz talks to Qwen Code through its CLI's ACP mode with the model pinned: qwen --acp -m qwen3.8-max-preview."
+}

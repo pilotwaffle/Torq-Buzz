@@ -1,0 +1,30 @@
+[package]
+name = "torq-buzz-event-verify"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.88.0"
+license = "Apache-2.0"
+description = "Narrow TORQ Buzz migration verifier and COPY_SELECTED_MESSAGE state machine"
+publish = false
+
+[[bin]]
+name = "torq-buzz-event-verify"
+path = "src/main.rs"
+
+[lib]
+name = "torq_buzz_event_verify"
+path = "src/lib.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+chrono = { version = "0.4", features = ["serde"] }
+hex = "0.4"
+nostr = { version = "0.44", default-features = false, features = ["std"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+thiserror = "2"
+uuid = { version = "1", features = ["v4", "serde"] }
+
+[dev-dependencies]
+tempfile = "3"

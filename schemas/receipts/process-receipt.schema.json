@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TORQ Buzz process receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "role",
+    "launcher_run_id",
+    "receipt_nonce",
+    "pid",
+    "executable_path",
+    "executable_sha256",
+    "started_utc"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "role": { "type": "string" },
+    "launcher_run_id": { "type": "string" },
+    "receipt_nonce": { "type": "string" },
+    "pid": { "type": "integer" },
+    "ppid": { "type": "integer" },
+    "creation_time_utc": { "type": ["string", "null"] },
+    "executable_path": { "type": "string" },
+    "executable_sha256": { "type": "string" },
+    "command_line_redacted_sha256": { "type": ["string", "null"] },
+    "relay_url": { "type": ["string", "null"] },
+    "ports": { "type": "array" },
+    "config_sha256": { "type": ["string", "null"] },
+    "release_manifest_sha256": { "type": ["string", "null"] },
+    "started_utc": { "type": "string" }
+  },
+  "not": {
+    "anyOf": [
+      { "required": ["private_key"] },
+      { "required": ["nsec"] },
+      { "required": ["secret_key"] }
+    ]
+  }
+}

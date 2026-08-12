@@ -1,0 +1,204 @@
+diff --git a/crates/buzz-acp/src/acp.rs b/crates/buzz-acp/src/acp.rs
+index 8a69895..0bc452c 100644
+--- a/crates/buzz-acp/src/acp.rs
++++ b/crates/buzz-acp/src/acp.rs
+@@ -389,6 +389,20 @@ enum SteerTransport {
+ 
+ fn build_client_capabilities() -> serde_json::Value {
+     serde_json::json!({
++        // Client-side filesystem support. Both flags are `false` because the
++        // inbound dispatch (see `handle_incoming`) implements no `fs/*` methods
++        // — an `fs/read_text_file` request would fall through to the catch-all
++        // and get `-32601 Method not found`. The object itself is still
++        // REQUIRED: gemini-cli's ACP schema rejects `initialize` outright with
++        // `-32602 Invalid params {"fs":{"_errors":["Required"]}}` when it is
++        // absent, which stops that adapter from starting at all. Declaring the
++        // capability honestly (present, but unsupported) lets the handshake
++        // succeed while agents fall back to their own filesystem tooling.
++        // Flip these to `true` only alongside real `fs/*` handlers.
++        "fs": {
++            "readTextFile": false,
++            "writeTextFile": false
++        },
+         // Signal to ACP adapters that Buzz can hand users to terminal-native
+         // auth flows. Adapters decide which auth methods to expose; Buzz does
+         // not hardcode vendor login commands from this capability.
+@@ -2392,6 +2406,34 @@ mod tests {
+         );
+     }
+ 
++    /// `clientCapabilities.fs` is required by the ACP schema — gemini-cli
++    /// rejects `initialize` with `-32602 Invalid params` when it is absent,
++    /// which prevents that adapter from starting at all.
++    ///
++    /// The flags stay `false`: `handle_incoming` implements no `fs/*` methods,
++    /// so an `fs/read_text_file` request would hit the catch-all and return
++    /// `-32601 Method not found`. Advertising `true` here without adding those
++    /// handlers would trade a startup failure for a mid-session one.
++    #[test]
++    fn client_capabilities_declare_fs_without_claiming_support() {
++        let caps = build_client_capabilities();
++
++        assert!(
++            caps["fs"].is_object(),
++            "fs must be present — gemini-cli rejects initialize without it, got: {caps}"
++        );
++        assert_eq!(
++            caps["fs"]["readTextFile"].as_bool(),
++            Some(false),
++            "readTextFile must stay false until an fs/read_text_file handler exists"
++        );
++        assert_eq!(
++            caps["fs"]["writeTextFile"].as_bool(),
++            Some(false),
++            "writeTextFile must stay false until an fs/write_text_file handler exists"
++        );
++    }
++
+     #[test]
+     fn session_new_mcp_server_has_required_fields() {
+         // Schema requires name, command, args, env — all present, args/env may be empty.
+diff --git a/crates/buzz-relay/src/config.rs b/crates/buzz-relay/src/config.rs
+index a169134..e807fb1 100644
+--- a/crates/buzz-relay/src/config.rs
++++ b/crates/buzz-relay/src/config.rs
+@@ -104,8 +104,14 @@ pub struct Config {
+     /// TCP port for the health-only router (`/_liveness`, `/_readiness`, `/_status`).
+     /// Separate from the app router so K8s probes bypass Istio and auth middleware.
+     pub health_port: u16,
++    /// Bind address for the health-only router. Defaults to all interfaces
++    /// (upstream-compatible). Permanent TORQ deployments set `127.0.0.1`.
++    pub health_bind_addr: std::net::IpAddr,
+     /// TCP port for the Prometheus metrics exporter (`GET /metrics`).
+     pub metrics_port: u16,
++    /// Bind address for the Prometheus metrics exporter. Defaults to all
++    /// interfaces (upstream-compatible). Permanent TORQ deployments set `127.0.0.1`.
++    pub metrics_bind_addr: std::net::IpAddr,
+ 
+     /// When true, NIP-42 pubkey-only authentication (no API token) is
+     /// restricted to pubkeys in the `pubkey_allowlist` table. Users with valid
+@@ -625,11 +631,27 @@ impl Config {
+             .and_then(|v| v.parse().ok())
+             .unwrap_or(8080);
+ 
++        let health_bind_addr_raw =
++            std::env::var("BUZZ_HEALTH_BIND_ADDR").unwrap_or_else(|_| "0.0.0.0".to_string());
++        let health_bind_addr: std::net::IpAddr = health_bind_addr_raw.parse().map_err(|e| {
++            ConfigError::InvalidValue(format!(
++                "BUZZ_HEALTH_BIND_ADDR must be an IP address: {e}"
++            ))
++        })?;
++
+         let metrics_port = std::env::var("BUZZ_METRICS_PORT")
+             .ok()
+             .and_then(|v| v.parse().ok())
+             .unwrap_or(9102);
+ 
++        let metrics_bind_addr_raw =
++            std::env::var("BUZZ_METRICS_BIND_ADDR").unwrap_or_else(|_| "0.0.0.0".to_string());
++        let metrics_bind_addr: std::net::IpAddr = metrics_bind_addr_raw.parse().map_err(|e| {
++            ConfigError::InvalidValue(format!(
++                "BUZZ_METRICS_BIND_ADDR must be an IP address: {e}"
++            ))
++        })?;
++
+         let media = buzz_media::MediaConfig {
+             s3_endpoint: std::env::var("BUZZ_S3_ENDPOINT")
+                 .unwrap_or_else(|_| "http://localhost:9000".to_string()),
+@@ -903,7 +925,9 @@ impl Config {
+             relay_private_key,
+             uds_path,
+             health_port,
++            health_bind_addr,
+             metrics_port,
++            metrics_bind_addr,
+             pubkey_allowlist_enabled,
+             require_relay_membership,
+             huddle_audio_available,
+diff --git a/crates/buzz-relay/src/main.rs b/crates/buzz-relay/src/main.rs
+index 9e6ca82..fc72bef 100644
+--- a/crates/buzz-relay/src/main.rs
++++ b/crates/buzz-relay/src/main.rs
+@@ -155,7 +155,11 @@ async fn main() -> anyhow::Result<()> {
+ 
+     let usage_interval_secs = usage_metrics_interval_secs();
+     let usage_idle_timeout_secs = usage_metrics_idle_timeout_secs(usage_interval_secs);
+-    relay_metrics::install(config.metrics_port, usage_idle_timeout_secs);
++    relay_metrics::install(
++        config.metrics_bind_addr,
++        config.metrics_port,
++        usage_idle_timeout_secs,
++    );
+     metrics::gauge!("buzz_audit_enabled").set(if config.audit_enabled { 1.0 } else { 0.0 });
+     info!(
+         port = config.metrics_port,
+@@ -1184,10 +1188,11 @@ async fn serve(
+ ) -> anyhow::Result<()> {
+     let config = &state.config;
+ 
+-    let health_listener = tokio::net::TcpListener::bind(("0.0.0.0", config.health_port))
++    let health_bind = std::net::SocketAddr::new(config.health_bind_addr, config.health_port);
++    let health_listener = tokio::net::TcpListener::bind(health_bind)
+         .await
+-        .map_err(|e| anyhow::anyhow!("Failed to bind health port {}: {e}", config.health_port))?;
+-    info!(port = config.health_port, "Health probe listener started");
++        .map_err(|e| anyhow::anyhow!("Failed to bind health listener {health_bind}: {e}"))?;
++    info!(%health_bind, "Health probe listener started");
+     tokio::spawn(async move {
+         axum::serve(health_listener, health_router).await.ok();
+     });
+@@ -1289,7 +1294,7 @@ async fn serve(
+     Ok(())
+ }
+ 
+-/// Wait for SIGTERM (Unix) or Ctrl+C.
++/// Wait for SIGTERM (Unix), Ctrl+C, or Windows CTRL_BREAK (process-group stop).
+ async fn shutdown_signal() {
+     #[cfg(unix)]
+     {
+@@ -1300,7 +1305,24 @@ async fn shutdown_signal() {
+             _ = sigterm.recv() => {},
+         }
+     }
+-    #[cfg(not(unix))]
++    #[cfg(windows)]
++    {
++        // Permanent Windows launchers send CTRL_BREAK to the process group.
++        // Upstream previously waited only for Ctrl+C, which is distinct on Windows.
++        match tokio::signal::windows::ctrl_break() {
++            Ok(mut ctrl_break) => {
++                tokio::select! {
++                    _ = tokio::signal::ctrl_c() => {}
++                    _ = ctrl_break.recv() => {}
++                }
++            }
++            Err(error) => {
++                tracing::warn!(%error, "CTRL_BREAK handler unavailable; retaining Ctrl+C shutdown");
++                tokio::signal::ctrl_c().await.ok();
++            }
++        }
++    }
++    #[cfg(not(any(unix, windows)))]
+     {
+         tokio::signal::ctrl_c().await.ok();
+     }
+diff --git a/crates/buzz-relay/src/metrics.rs b/crates/buzz-relay/src/metrics.rs
+index 16e521a..4bc72bb 100644
+--- a/crates/buzz-relay/src/metrics.rs
++++ b/crates/buzz-relay/src/metrics.rs
+@@ -63,9 +63,13 @@ const FANOUT_BUCKETS: [f64; 9] = [0.0, 1.0, 5.0, 10.0, 25.0, 50.0, 100.0, 500.0,
+ ///
+ /// Must be called from within a Tokio runtime.
+ /// Panics if a recorder is already installed or the port is in use.
+-pub fn install(port: u16, gauge_idle_timeout_secs: u64) {
++///
++/// `bind_addr` defaults to all interfaces when unset by callers that still
++/// pass the legacy port-only path via `0.0.0.0`.
++pub fn install(bind_addr: std::net::IpAddr, port: u16, gauge_idle_timeout_secs: u64) {
++    let listener = std::net::SocketAddr::new(bind_addr, port);
+     let (recorder, exporter) = PrometheusBuilder::new()
+-        .with_http_listener(([0, 0, 0, 0], port))
++        .with_http_listener(listener)
+         // Remove gauge series that the relay intentionally stops emitting.
+         .idle_timeout(
+             MetricKindMask::GAUGE,

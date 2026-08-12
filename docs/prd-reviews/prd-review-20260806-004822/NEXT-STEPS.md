@@ -1,0 +1,1 @@
+Run this pipeline from Codex after confirming both CLIs are authenticated. Each cycle must create an independent Claude review, a Codex synthesis record, a revised PRD, and a Codex readiness report. Stop at the first clean verifier pass or after the configured cycle limit.

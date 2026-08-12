@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "torq-buzz/migration/copy_selected_message.schema.json",
+  "title": "COPY_SELECTED_MESSAGE journal record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "migration_run_id",
+    "step",
+    "source_event_id",
+    "source_event_author",
+    "source_channel_id",
+    "destination_channel_id",
+    "destination_public_key",
+    "content_sha256",
+    "intended_kind",
+    "intended_relay_url",
+    "current_state",
+    "timestamps"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "migration_run_id": { "type": "string", "minLength": 1 },
+    "step": { "type": "string", "const": "COPY_SELECTED_MESSAGE" },
+    "source_event_id": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "source_event_author": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "source_channel_id": { "type": "string", "format": "uuid" },
+    "destination_channel_id": { "type": "string", "format": "uuid" },
+    "destination_public_key": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "intended_kind": { "type": "integer", "const": 9 },
+    "intended_relay_url": { "type": "string", "const": "ws://127.0.0.1:3300" },
+    "current_state": {
+      "type": "string",
+      "enum": [
+        "PLANNED",
+        "DUPLICATE_CHECKED",
+        "SIGNED",
+        "PUBLISHED",
+        "VERIFIED",
+        "COMPLETE",
+        "COMPLETE_REUSED",
+        "AMBIGUOUS_DUPLICATE"
+      ]
+    },
+    "destination_event_id": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "signed_event_path": { "type": ["string", "null"] },
+    "signed_event_sha256": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verification_result": { "type": ["string", "null"] },
+    "timestamps": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "planned_utc": { "type": ["string", "null"], "format": "date-time" },
+        "duplicate_checked_utc": { "type": ["string", "null"], "format": "date-time" },
+        "signed_utc": { "type": ["string", "null"], "format": "date-time" },
+        "published_utc": { "type": ["string", "null"], "format": "date-time" },
+        "verified_utc": { "type": ["string", "null"], "format": "date-time" },
+        "completed_utc": { "type": ["string", "null"], "format": "date-time" }
+      }
+    }
+  },
+  "not": {
+    "anyOf": [
+      { "required": ["private_key"] },
+      { "required": ["secret_key"] },
+      { "required": ["nsec"] },
+      { "required": ["seckey"] }
+    ]
+  }
+}
