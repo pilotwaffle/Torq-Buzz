@@ -104,6 +104,21 @@ The DeepSeek harness carries `QWEN_CODE_API_TIMEOUT_MS=600000`, which prevents l
 
 Harness definitions contain no API keys. Qwen and Gemini credentials remain in each CLI's user-level configuration.
 
+## Managed-agent memory
+
+Buzz ACP enables managed-agent memory by default. At the start of each channel session, Buzz fetches the agent's `core` memory and injects it as `[Agent Memory — core]`. If no core exists, the agent receives a short onboarding nudge to create one.
+
+Custom harnesses such as Qwen Code and Gemini CLI do not need a memory MCP server. They can read and write memories through the Buzz CLI inherited from the managed-agent environment:
+
+```bash
+buzz mem get core
+buzz mem set core "..."
+buzz mem ls
+buzz mem patch <slug>
+```
+
+Keep `core` compact. Put durable details in separate `mem/<topic>` slugs and read them on demand.
+
 ## Validation
 
 Run the safe C1 validation set:
