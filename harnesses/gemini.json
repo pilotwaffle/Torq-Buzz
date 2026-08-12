@@ -5,9 +5,9 @@
   "args": [
     "--acp",
     "-m",
-    "gemini-3.1-pro-preview"
+    "gemini-3.5-flash"
   ],
   "env": {},
   "installInstructionsUrl": "https://github.com/google-gemini/gemini-cli",
-  "installHint": "Buzz talks to Gemini CLI through its ACP mode (gemini --acp -m gemini-3.1-pro-preview). Deep Think = HIGH thinking level (default for Gemini 3.1 Pro)."
+  "installHint": "Buzz talks to Gemini CLI through its ACP mode (gemini --acp -m gemini-3.5-flash)."
 }

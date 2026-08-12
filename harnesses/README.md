@@ -8,7 +8,7 @@ These JSON definitions register additional CLI-backed ACP harnesses with Buzz De
 | `qwen-max.json` | Qwen Code (Qwen3.8 Max) | `qwen3.8-max-preview` |
 | `qwen-deepseek.json` | Qwen Code (DeepSeek) | `deepseek-v4-pro` |
 | `qwen-glm.json` | Qwen Code (GLM 5.2) | `glm-5.2` |
-| `gemini.json` | Gemini CLI | `gemini-3.1-pro-preview` |
+| `gemini.json` | Gemini CLI | `gemini-3.5-flash` |
 
 Install them into the current user's Buzz app-data directory:
 
