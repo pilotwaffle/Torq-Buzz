@@ -5,9 +5,11 @@
   "args": [
     "--acp",
     "-m",
-    "gemini-3.5-flash"
+    "gemini-3.5-flash-lite"
   ],
-  "env": {},
+  "env": {
+    "GEMINI_PTY_INFO": "child_process"
+  },
   "installInstructionsUrl": "https://github.com/google-gemini/gemini-cli",
-  "installHint": "Buzz talks to Gemini CLI through its ACP mode (gemini --acp -m gemini-3.5-flash)."
+  "installHint": "Buzz talks to Gemini CLI through its ACP mode (gemini --acp -m gemini-3.5-flash-lite)."
 }
