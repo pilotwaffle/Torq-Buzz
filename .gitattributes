@@ -1,2 +1,2 @@
 # Unified diff context lines intentionally begin with a space.
-patches/*.patch whitespace=-blank-at-eol
+patches/*.patch text eol=lf whitespace=-blank-at-eol
