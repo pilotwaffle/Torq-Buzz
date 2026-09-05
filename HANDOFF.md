@@ -55,8 +55,12 @@ C3 signing, C4 publish, live COPY_SELECTED_MESSAGE migration, C6 pilot retiremen
 
 - `source/buzz` submodule URL is now `https://github.com/pilotwaffle/buzz.git` (fork of `block/buzz`), branch `torq/slice0-2026-09-05`, base `6e5c462a` (upstream `relay-v0.2.1`).
 - Existing checkouts (e.g. Maginot) must run `git submodule sync -- source/buzz && git submodule update --init source/buzz` to pick this up.
-- The previous shallow checkout is preserved, git-readable, at `source/buzz.pre-push-2026-09-05` — its git dir lives under `E:\TORQ-CONSOLE\tmp\buzz-pilot\20260731-004310\source\buzz\.git` (main worktree = that temp checkout); it is listed there as `prunable`.
-- Do NOT run `git worktree prune` in that git dir — it would sever the backup.
-- To roll back, move the backup directory back to `source/buzz`; do not delete either directory without operator sign-off.
+- The previous shallow checkout is preserved, git-readable, at `source/buzz.pre-push-2026-09-05` — its git dir lives under `E:\TORQ-CONSOLE\tmp\buzz-pilot\20260731-004310\source\buzz\.git` (main worktree = that temp checkout).
+- Rollback (restores the pre-push shallow checkout at its original path; run from `E:\torq-buzz`):
+  1. `mv source/buzz tmp/buzz-fork-checkout.moved-aside` — moves the fork checkout out of the way (its git dir stays at `.git/modules/source/buzz`; do NOT run git inside the moved-aside directory: its `core.worktree` is relative and would resolve to whatever occupies `source/buzz`).
+  2. `mv source/buzz.pre-push-2026-09-05 source/buzz` — the backup's `.git` gitfile and the TORQ-CONSOLE admin `gitdir` both use this absolute path, so git access is fully restored.
+  3. To undo the rollback: reverse the two moves in the opposite order.
+  Do not delete either directory without operator sign-off.
+- The TORQ-CONSOLE git dir (`E:\TORQ-CONSOLE\tmp\buzz-pilot\20260731-004310\source\buzz\.git`) still lists `E:/TORQ-BUZZ/source/buzz` as a LIVE linked worktree at `6e5c462a`. That path is now occupied by the fork checkout, so two git dirs claim one path. Do not run `git worktree prune`, `repair`, `move`, or `remove` in that git dir: `repair` would rewrite the fork checkout's `.git` file, `remove --force` would delete the fork checkout directory, and `prune` is a no-op today but would sever the backup once the registration is deemed stale. Leave that registration alone until the backup is retired with operator sign-off.
 - Outer text files stored LF materialize CRLF on Windows (system `core.autocrlf=true`).
 - 18 `personas/` files were CRLF on disk and are stored LF — follow-up: consider `* text=auto` in outer `.gitattributes`.
