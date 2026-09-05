@@ -50,3 +50,13 @@ Records: `%APPDATA%\xyz.block.buzz.app\agents\managed-agents.json` (template+ins
 ## Blocked phases (need explicit operator GO)
 
 C3 signing, C4 publish, live COPY_SELECTED_MESSAGE migration, C6 pilot retirement, C7 Gate 1 claim, model-council work beyond the 3 connected agents.
+
+## Submodule fork and backup (2026-09-05)
+
+- `source/buzz` submodule URL is now `https://github.com/pilotwaffle/buzz.git` (fork of `block/buzz`), branch `torq/slice0-2026-09-05`, base `6e5c462a` (upstream `relay-v0.2.1`).
+- Existing checkouts (e.g. Maginot) must run `git submodule sync -- source/buzz && git submodule update --init source/buzz` to pick this up.
+- The previous shallow checkout is preserved, git-readable, at `source/buzz.pre-push-2026-09-05` — its git dir lives under `E:\TORQ-CONSOLE\tmp\buzz-pilot\20260731-004310\source\buzz\.git` (main worktree = that temp checkout); it is listed there as `prunable`.
+- Do NOT run `git worktree prune` in that git dir — it would sever the backup.
+- To roll back, move the backup directory back to `source/buzz`; do not delete either directory without operator sign-off.
+- Outer text files stored LF materialize CRLF on Windows (system `core.autocrlf=true`).
+- 18 `personas/` files were CRLF on disk and are stored LF — follow-up: consider `* text=auto` in outer `.gitattributes`.
