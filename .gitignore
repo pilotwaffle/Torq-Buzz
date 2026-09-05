@@ -50,3 +50,11 @@ tmp/
 !docs/**
 !*.md
 !.gitignore
+
+# TORQ-BUZZ publish exclusions (not part of the published tree)
+app/
+repos/
+.playwright-mcp/
+TORQ-BUZZdatarelaygit-pack-cache/
+*.exe.*-backup
+source/buzz.pre-push-*/
