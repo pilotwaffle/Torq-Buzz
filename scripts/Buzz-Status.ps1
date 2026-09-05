@@ -128,6 +128,10 @@ if ($null -ne $receipt) {
     if ($null -eq $proc) {
         $relayState = "stale_receipt"
         $relayDetail = "pid_not_alive"
+    } elseif ($proc.ProcessName -ne "buzz-relay") {
+        # Windows reused the receipt PID for an unrelated process (seen after reboot).
+        $relayState = "stale_receipt"
+        $relayDetail = "pid_reused"
     } else {
         if ($rRole -ne "permanent-relay") { $mismatches += "role=$rRole" }
         $livePath = [string]$proc.Path
