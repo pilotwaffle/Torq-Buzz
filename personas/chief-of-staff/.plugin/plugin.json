@@ -1,0 +1,41 @@
+{
+  "$schema": "https://open-plugin-spec.org/schema/v1/plugin.json",
+  "id": "com.skyremote.chief-of-staff-torq",
+  "name": "Chief of Staff (TORQ Buzz edition)",
+  "version": "0.4.1",
+  "description": "A chief-of-staff orchestrator that triages and routes work to division leads and specialist agents, adapted for TORQ Buzz from the skyremote chief-of-staff-kit (MIT).",
+  "author": "skyremote (chief-of-staff-kit), adapted for TORQ Buzz",
+  "license": "MIT",
+  "homepage": "https://github.com/skyremote/chief-of-staff-kit",
+  "keywords": ["orchestrator", "chief-of-staff", "team", "buzz"],
+  "engines": {
+    "buzz": ">=0.5.2"
+  },
+  "personas": [
+    "agents/chief-of-staff.persona.md",
+    "agents/lead-torq-buzz.persona.md",
+    "agents/code-auditor.persona.md",
+    "agents/content-engine.persona.md",
+    "agents/cto-architect.persona.md",
+    "agents/growth-marketer.persona.md",
+    "agents/ops-steward.persona.md",
+    "agents/presentation-writer.persona.md",
+    "agents/problem-solver.persona.md",
+    "agents/product-designer.persona.md",
+    "agents/program-manager.persona.md",
+    "agents/skool-writer-and-publish.persona.md",
+    "agents/video-editor.persona.md",
+    "agents/voice-scriptwriter.persona.md",
+    "agents/web-builder.persona.md"
+  ],
+  "defaults": {
+    "triggers": {
+      "mentions": true,
+      "keywords": [],
+      "all_messages": false
+    },
+    "subscribe": [],
+    "thread_replies": true,
+    "broadcast_replies": false
+  }
+}
