@@ -13,7 +13,7 @@ The goal is simple: make a powerful agent collaboration workspace easier to inst
   - Gemini CLI ACP capability handshake fix
 - **Permanent relay operations** for a loopback Buzz relay on `127.0.0.1:3300`
 - **Docker support stack** with Postgres, Redis, and MinIO
-- **Custom ACP harnesses** for Qwen Code, DeepSeek, GLM 5.2, and Gemini CLI
+- **Custom ACP harnesses** for Qwen Code, DeepSeek, GLM 5.2, GLM 5.3, and Gemini CLI
 - **DeepSeek timeout correction** using a scoped 10-minute Qwen Code API timeout
 - **Operator scripts** for initialization, status checks, migration, stop ownership, and dependency validation
 - **Receipt schemas and runbooks** for auditable startup, shutdown, and recovery
@@ -98,6 +98,7 @@ The `harnesses/` directory currently includes:
 - Qwen Code with Qwen3.8 Max
 - Qwen Code with DeepSeek v4 Pro
 - Qwen Code with GLM 5.2
+- Qwen Code with GLM 5.3
 - Gemini CLI
 
 The DeepSeek harness carries `QWEN_CODE_API_TIMEOUT_MS=600000`, which prevents long Buzz prompts from failing at Qwen Code's shorter default request timeout.
