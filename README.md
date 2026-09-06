@@ -22,7 +22,7 @@ Recorded from the running Windows desktop on September 5, 2026: the Agents overv
 
 ## Source of truth
 
-The checked-in Git submodule entry is authoritative. At this README review, `source/buzz` points to [`d6cf735aef3e9b2e2fcbfe83ee107531eb072ef6`](https://github.com/pilotwaffle/buzz/commit/d6cf735aef3e9b2e2fcbfe83ee107531eb072ef6), and [.gitmodules](.gitmodules) selects `pilotwaffle/buzz`, derived from `block/buzz`.
+The checked-in Git submodule entry is authoritative. At this README review, `source/buzz` points to [`fb23b9ea0db5c052063eebbc57415e630ab275ae`](https://github.com/pilotwaffle/buzz/commit/fb23b9ea0db5c052063eebbc57415e630ab275ae) on branch `torq/slice0-on-0.5.23`, based on Block's `desktop-v0.5.23` plus four TORQ commits (Windows portability, loopback health/metrics, inert Slice 0 contracts, path/OAuth/git-sign hardening). [.gitmodules](.gitmodules) selects `pilotwaffle/buzz`, derived from `block/buzz`.
 
 ```powershell
 git ls-tree HEAD source/buzz
@@ -31,7 +31,7 @@ git -C source/buzz rev-parse HEAD
 
 Do **not** apply `patches/torq-buzz-local.patch` as a setup step: its changes are already represented in the current fork, and it does not apply cleanly to this pin. The patch is retained as historical material.
 
-`config/installation.json` still describes the older `v0.5.2` / `3e48f1b...` C1 baseline. It is historical installation metadata, not the current source revision. Likewise, the old `ALL_C1` test checks that earlier pin and is not a green acceptance gate for the current checkout.
+`config/installation.json` records the current source pin (`desktop-v0.5.23` / `fb23b9ea0...`) and keeps the older `v0.5.2` / `3e48f1b...` C1 baseline under `c1_pinned_*`. The old `ALL_C1` test still checks that earlier pin and is not a green acceptance gate for the current checkout.
 
 ## Getting started on Windows
 
@@ -45,7 +45,7 @@ git submodule update --init --recursive
 $TorqBuzzRoot = (Get-Location).Path
 ```
 
-Use Git and PowerShell for the operator scripts, Docker Desktop for the support stack, and the pinned source's [development prerequisites and build instructions](https://github.com/pilotwaffle/buzz/blob/d6cf735aef3e9b2e2fcbfe83ee107531eb072ef6/CONTRIBUTING.md) for the app and relay. Building the desktop also requires the Windows native dependencies appropriate to Tauri. Installing a harness does not install or authenticate its provider CLI.
+Use Git and PowerShell for the operator scripts, Docker Desktop for the support stack, and the pinned source's [development prerequisites and build instructions](https://github.com/pilotwaffle/buzz/blob/fb23b9ea0db5c052063eebbc57415e630ab275ae/CONTRIBUTING.md) for the app and relay. Building the desktop also requires the Windows native dependencies appropriate to Tauri. Installing a harness does not install or authenticate its provider CLI.
 
 ### 2. Prepare the local layout
 
@@ -126,7 +126,7 @@ buzz mem patch core --base-hash <hash> --patch-file <diff-file>
 
 This README was checked against the local tracked files and GitHub repository on September 5, 2026. The review covered the source pin, scripts, harnesses, memory implementation, configuration, and the recorded Agents UI. It was not a clean-machine installation test or a full application test-suite run.
 
-For code changes, follow the pinned source's [test instructions](https://github.com/pilotwaffle/buzz/blob/d6cf735aef3e9b2e2fcbfe83ee107531eb072ef6/CONTRIBUTING.md#running-tests), and test the relevant Windows operator scripts separately. Do not use the historical `ALL_C1` result as a substitute for current-source tests. Before publication, review the exact staged files, run `git diff --check`, and use a secret scanner appropriate to the files being published.
+For code changes, follow the pinned source's [test instructions](https://github.com/pilotwaffle/buzz/blob/fb23b9ea0db5c052063eebbc57415e630ab275ae/CONTRIBUTING.md#running-tests), and test the relevant Windows operator scripts separately. Do not use the historical `ALL_C1` result as a substitute for current-source tests. Before publication, review the exact staged files, run `git diff --check`, and use a secret scanner appropriate to the files being published.
 
 ## Security and licensing
 
@@ -134,4 +134,4 @@ Runtime directories and local secret-file patterns are excluded by [.gitignore](
 
 Credential storage and exposure depend on the selected identity and harness. Managed-agent runtimes can pass credentials through process environment variables, so it would be incorrect to claim keys never leave a credential store. Treat agents and subprocesses according to their granted access and protect the host accordingly.
 
-The root repository is [MIT licensed](LICENSE). The Buzz source submodule carries its own [Apache-2.0 license](https://github.com/pilotwaffle/buzz/blob/d6cf735aef3e9b2e2fcbfe83ee107531eb072ef6/LICENSE); retain applicable notices when redistributing it.
+The root repository is [MIT licensed](LICENSE). The Buzz source submodule carries its own [Apache-2.0 license](https://github.com/pilotwaffle/buzz/blob/fb23b9ea0db5c052063eebbc57415e630ab275ae/LICENSE); retain applicable notices when redistributing it.

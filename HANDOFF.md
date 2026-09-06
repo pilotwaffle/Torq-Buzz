@@ -53,7 +53,7 @@ C3 signing, C4 publish, live COPY_SELECTED_MESSAGE migration, C6 pilot retiremen
 
 ## Submodule fork and backup (2026-09-05)
 
-- `source/buzz` submodule URL is now `https://github.com/pilotwaffle/buzz.git` (fork of `block/buzz`), branch `torq/slice0-2026-09-05`, base `6e5c462a` (upstream `relay-v0.2.1`).
+- `source/buzz` submodule URL is `https://github.com/pilotwaffle/buzz.git` (fork of `block/buzz`), branch `torq/slice0-on-0.5.23`, pin `fb23b9ea0` (upstream `desktop-v0.5.23` plus four TORQ commits). The previous pin `torq/slice0-2026-09-05` / `d6cf735ae` (base `relay-v0.2.1`) remains on the fork as rollback.
 - Existing checkouts (e.g. Maginot) must run `git submodule sync -- source/buzz && git submodule update --init source/buzz` to pick this up.
 - The previous shallow checkout is preserved, git-readable, at `source/buzz.pre-push-2026-09-05` — its git dir lives under `E:\TORQ-CONSOLE\tmp\buzz-pilot\20260731-004310\source\buzz\.git` (main worktree = that temp checkout).
 - Rollback (restores the pre-push shallow checkout at its original path; run from `E:\torq-buzz`):
