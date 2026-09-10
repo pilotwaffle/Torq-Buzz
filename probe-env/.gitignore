@@ -1,0 +1,8 @@
+# Throwaway gate-run artefacts: logs, captured output, keys, profiles. Tooling (scripts) is tracked.
+*.log
+*.out
+*.json
+*.cpuprofile
+*.evidence
+__pycache__/
+s16-test1-agent-key.json

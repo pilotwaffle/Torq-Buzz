@@ -1,0 +1,19 @@
+S16 — goose acp direct stdio drive (NDJSON)
+started_utc=2026-09-07T03:46:23Z
+
+>>> {"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":2,"clientCapabilities":{"fs":{"readTextFile":false,"writeTextFile":false}},"clientInfo":{"name":"s16-goose-probe","version":"0.0.0"}}}
+
+--- waiting for initialize response (id 0) ---
+<<< {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":2,"agentCapabilities":{"loadSession":true,"promptCapabilities":{"image":true,"audio":false,"embeddedContext":true},"mcpCapabilities":{"http":true,"sse":false,"acp":false},"sessionCapabilities":{"list":{},"close":{}},"auth":{},"_meta":{"goose":{"localInference":{}}}},"authMethods":[{"id":"goose-provider","name":"Configure Provider","description":"Run `goose configure` to set up your AI provider and API key"}],"agentInfo":{"name":"goose","version":"1.45.0"}}}
+
+initialize_response={"jsonrpc": "2.0", "id": 0, "result": {"protocolVersion": 2, "agentCapabilities": {"loadSession": true, "promptCapabilities": {"image": true, "audio": false, "embeddedContext": true}, "mcpCapabilities": {"http": true, "sse": false, "acp": false}, "sessionCapabilities": {"list": {}, "close": {}}, "auth": {}, "_meta": {"goose": {"localInference": {}}}}, "authMethods": [{"id": "goose-provider", "name": "Configure Provider", "description": "Run `goose configure` to set up your AI provider and API key"}], "agentInfo": {"name": "goose", "version": "1.45.0"}}}
+>>> {"jsonrpc":"2.0","id":1,"method":"session/new","params":{"cwd":"E:\\TORQ-BUZZ\\probe-env","mcpServers":[]}}
+
+--- waiting for session/new response (id 1) ---
+<<< {"jsonrpc":"2.0","id":1,"error":{"code":-32603,"message":"Internal error","data":"Failed to resolve provider: Configuration value not found: GOOSE_PROVIDER"}}
+
+session_new_response={"jsonrpc": "2.0", "id": 1, "error": {"code": -32603, "message": "Internal error", "data": "Failed to resolve provider: Configuration value not found: GOOSE_PROVIDER"}}
+sessionId=None
+
+FAIL: no sessionId from session/new
+--- stderr so far ---

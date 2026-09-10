@@ -23,6 +23,8 @@ Supersedes: v0.1 (`docs/PRD-TORQ-BUZZ-AGENT-COMPUTER-001.md`, preserved unmodifi
 
 No findings were rejected. The riskiest assumption in v0.1 (external daemon observing/driving ACP subprocesses it does not own) is retired; the new riskiest assumption is §16.
 
+**Post-verdict addition (operator token-usage audit, 2026-09-03):** required per-routine and per-delegation token budgets with auto-pause were added to FR-3/FR-4 after analysis of the operator's own bills showed unattended agent loops × long context as the burn pattern (~1.09B cache-read tokens over 46 active hours on Grokbot; a $290 Claude session producing ~3.4k added lines with a $59 marginal spend for ~0 net lines).
+
 ### Revision notes v0.2a (second review pass, 2026-09-03 — verified against source)
 
 | # | Finding | Disposition |
@@ -183,10 +185,12 @@ Source agent drafts a typed delegation request. The operator reviews and approve
 - New action type on `buzz-workflow`: `{ agent_pubkey, prompt, result_channel, idempotency_key }`.
 - Composable with existing `TriggerDef::Schedule { cron | interval }`; 15-minute minimum interval; 20 enabled routines per agent cap; runs under the creating principal's grants; existing approval gates unchanged.
 - At-least-once firing with durable claim keys; missed windows skipped, never replayed in bulk; duplicate deliveries collapse by idempotency key.
+- **Token budget per routine (required)**: every routine spec carries `token_budget_per_run` and `token_budget_per_day`. A run exceeding its per-run budget is terminated and counted as a failure; breaching the daily budget auto-pauses the routine with one notice (independent of the 10-strike rule). (Added 2026-09-03 after operator bill analysis: unattended loops × long context were the burn pattern — see §0.)
 
 ### FR-4: Delegation contract
 
 - Typed record; free-text agent-to-agent chatter is not delegation and is not surfaced as such.
+- **Token budget per delegation (required)**: the immutable request carries an explicit token budget; consumption is enforced in the same per-action boundary as `max_turns`/cost reservations (see below); exhaustion terminates the run as `failed(budget)`; hops consume the budget, never extend it. (Added 2026-09-03 after operator bill analysis — see §0.)
 - **Authority boundary**: every agent in the signed `agent_path` must resolve in the current tenant to the operator who signed the approval. Nested requests also bind the parent approval id and must extend an opaque lineage token from the current durable live-run permit by exactly one target. That token binds tenant, run/delegation identity, approval/hash, signer, expiry, and parent path; it cannot be minted from stateless context. The source can draft, but the target cannot start until an operator-signed kind `43007` approval references the delegation id and its tenant-bound immutable request hash. The target uses its normal authority and existing approval gates; delegation never copies, unions, or intersects permissions.
 - **Execution context**: `DelegationExecutionContext` contains the immutable request (delegation id, origin event id, optional parent approval event id, source agent, target agent, bounded `agent_path`, hop budget, max turns, optional cost cap, idempotency key, expiry), operator approval event id, immutable request hash, hop count, and remaining turn limit. It is provenance and constraint data, not an authorization grant. Missing, forged, expired, lineage-stripped, tenant-mismatched, or owner-mismatched context fails closed.
 - **Replay boundary**: `validate_for_claim` verifies the complete approval event, server-resolved tenant and parent lineage, current owners, bindings, expiry, and constraints. At transaction time, freshness is rechecked; then a durable transaction atomically claims `(community_id, delegation_id)`, `(community_id, approval_event_id)`, and `(community_id, operator_pubkey, source_agent, idempotency_key)` **and commits a durable work/outbox row**. Exact matching retries collapse only when work is durably pending or completed; any key reused with different binding data returns `approval_replay`; claim-store failure returns `authority_unavailable`. Claim rows remain through signed expiry. Only the Slice-4 transaction seam may create a private execution permit.
