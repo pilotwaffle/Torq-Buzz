@@ -236,6 +236,12 @@ if (cmd === "eval") {
   console.log(`capturing paint lines to ${outfile} for ${seconds}s ...`);
   await new Promise((r) => setTimeout(r, seconds * 1000));
   console.log(`done: ${n} paint lines captured`);
+} else if (cmd === "shot") {
+  const [outfile] = rest;
+  const fs = await import("node:fs");
+  const r = await cdp.send("Page.captureScreenshot", { format: "png" });
+  fs.writeFileSync(outfile, Buffer.from(r.data, "base64"));
+  console.log(`screenshot -> ${outfile}`);
 } else {
   console.log("unknown command");
 }

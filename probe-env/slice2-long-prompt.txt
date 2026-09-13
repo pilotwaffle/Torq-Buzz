@@ -1,0 +1,1 @@
+Task ROUND: write out the numbers from 1 to 300 as words, one per line (one, two, three, ...), no tools, no shortcuts, no summarizing, every single line, then finish with the line DONE ROUND.
