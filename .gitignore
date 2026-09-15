@@ -58,3 +58,4 @@ repos/
 TORQ-BUZZdatarelaygit-pack-cache/
 *.exe.*-backup
 source/buzz.pre-push-*/
+config/*.env.bak*
