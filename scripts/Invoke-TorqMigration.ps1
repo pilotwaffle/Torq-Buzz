@@ -107,7 +107,7 @@ $requiredPlan = @(
     "content"
 )
 foreach ($k in $requiredPlan) {
-    if (-not $plan.PSObject.Properties.Name -contains $k) {
+    if (-not ($plan.PSObject.Properties.Name -contains $k)) {
         throw "migration plan missing field: $k"
     }
 }
@@ -169,7 +169,7 @@ Write-Host "  destination_channel_id=$($plan.destination_channel_id)"
 Write-Host "  dry_run=$DryRun"
 
 # --- DUPLICATE_CHECKED -------------------------------------------------------
-# Query is best-effort when relay is up; dry-run may supply candidates via plan.candidates_json_path.
+# Non-dry-run queries the relay and FAILS CLOSED on query error; dry-run may supply candidates via plan.candidates_json_path.
 $candidatesJson = "[]"
 if ($plan.PSObject.Properties.Name -contains "candidates_json_path" -and $plan.candidates_json_path) {
     if (Test-Path -LiteralPath ([string]$plan.candidates_json_path)) {
@@ -188,8 +188,9 @@ if ($plan.PSObject.Properties.Name -contains "candidates_json_path" -and $plan.c
             $candidatesJson = "[$candidatesJson]"
         }
     } catch {
-        Write-Warning "Relay query failed (will treat as 0 candidates for dry orchestration): $_"
-        $candidatesJson = "[]"
+        # Fail closed: an unknown duplicate state must never be treated as 0 copies,
+        # otherwise a signed copy could be published on top of an existing one.
+        throw "Duplicate check failed: relay query to $RelayHttpQueryUrl failed ($($_.Exception.Message)). Refusing to proceed; no copy created. Fix the relay and re-run."
     }
 }
 
